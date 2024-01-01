@@ -70,16 +70,16 @@ elif selected_option == "Crime Prediction App":
     # Creating form for input fields
     with st.form(key='crime_input_form'):
         # User input
-        vict_sex = st.selectbox("Select victim's sex", ['F', 'M', 'X', 'H', '-'])
+        vict_sex = st.selectbox("Select victim's sex", ['Female', 'Male', 'Non Binary', 'H', 'Unknown'])
         lat = st.number_input("Enter latitude", min_value=0.0, max_value=34.3343)
         lon = st.number_input("Enter longitude", min_value=-118.6676, max_value=0.0)
 
-        descent = st.selectbox("Select victim's descent", ['U', 'B', 'W', 'O', 'H'])
+        descent = st.selectbox("Select victim's descent", ['Unknown', 'Black', 'White', 'Asian', 'Hispanic'])
         has_victim = st.checkbox("Does the incident have a victim?")
         age_bins = st.selectbox("Select age group", ['No Victim', '0-20', '21-30', '31-45', '46+'])
         weapon_group = st.selectbox("Select weapon group", ['Guns', 'Knife and Cutting Instruments', 'Blunt and Impact Weapons',
                                             'STRONG-ARM (HANDS, FIST, FEET OR BODILY FORCE)', 'Unclassified', 'No Weapon Used'])
-        location_group = st.selectbox("Select location group", ['Other', 'ST', 'BL', 'AV'])
+        location_group = st.selectbox("Select location group", ['Other', 'Street', 'Boulevard', 'Avenue'])
         day = st.selectbox("Select day", ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
         month = st.selectbox("Select month", ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'])
         status_category = st.selectbox("Select status category", ['Investigation', 'Other'])
@@ -103,13 +103,14 @@ elif selected_option == "Crime Prediction App":
         submit_button = st.form_submit_button(label='Predict',help="Click to make a prediction")
 
         # Preprocess the input features
-        vict_sex_encoded = {'F':2, 'M':3, 'X':0,'H':1, '-':1}[vict_sex]
-        descent_encoded = {'U': 0, 'B': 1, 'W':2, 'O':3, 'H': 4}[descent]
+        vict_sex_encoded = {'Female':2, 'Male':3, 'Non Binary':0,'H':1, 'Unknown':1}[vict_sex]
+        descent_encoded = {'Unknown': 0, 'Black': 1, 'White':2, 'Asain':3, 'Hispanic': 4}[descent]
         has_victim_encoded = 1 if has_victim else 0
         age_bins_encoded = {'No Victim':0, '0-20':1, '21-30':2, '31-45':3, '46+':4}[age_bins]  # Assuming this is already encoded
         weapon_group_encoded = {'Guns': 100, 'Knife and Cutting Instruments': 200, 'Blunt and Impact Weapons': 300,
                                             'STRONG-ARM (HANDS, FIST, FEET OR BODILY FORCE)': 400, 'Unclassified': 500, 'No Weapon Used': 0}[weapon_group]
-        location_group_encoded = location_group_encoder.transform([location_group])[0]
+        location_group_mapping = {'Other':'Other', 'Street':'ST', 'Boulevard':'BL', 'Avenue':'AV'}
+        location_group_encoded = location_group_encoder.transform([location_group_mapping[location_group]])[0]
         day_encoded = day_encoder.transform([day])[0]
         month_encoded = month_encoder.transform([month])[0]
         status_category_encoded = status_category_encoder.transform([status_category])[0]
